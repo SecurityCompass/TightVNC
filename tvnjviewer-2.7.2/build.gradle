@@ -1,0 +1,491 @@
+apply plugin:'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+version = '2.7.2'
+
+project.ext.baseName = 'tightvnc-jviewer'
+def buildNo = processBuildNo(version)
+
+defaultTasks 'clean', 'dist'
+
+configurations {
+    viewerSwingCompile { extendsFrom compile }
+    viewerSwingRuntime { extendsFrom viewerSwingCompile, runtime }
+}
+
+sourceSets {
+	viewerSwing {
+		java {
+			srcDir 'src/viewer_swing/java'
+		}
+		resources {
+			srcDir 'src/viewer_swing/resources'
+		}
+	}
+	main {
+		java.srcDirs += viewerSwing.java.srcDirs
+		resources.srcDirs += viewerSwing.resources.srcDirs
+	}
+}
+
+repositories {
+	flatDir {
+		dirs 'src/libs/'
+	}
+}
+
+dependencies {
+    viewerSwingCompile group: 'com.jcraft', name: 'jsch', version: '0.1.+', ext: 'jar'
+    viewerSwingRuntime configurations.viewerSwingCompile
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+def manifestAttributes = ['Main-Class': 'com.glavsoft.viewer.Viewer',
+        'Implementation-Version': "${project.version} (${buildNo})",
+        'Implementation-Title': 'TightVNC Viewer',
+        'Implementation-Vendor': 'GlavSoft LLC.']
+
+jar {
+    baseName = project.baseName
+    version = null
+    manifest {
+        attributes manifestAttributes
+    }
+    def runtimeDeps = configurations.viewerSwingRuntime.collect {
+        it.isDirectory() ? it : zipTree(it)
+    }
+    from(runtimeDeps) {
+        exclude 'META-INF/**'
+    }
+}
+
+task noSshJar (type: Jar, dependsOn: classes) {
+    baseName = 'nossh/' + project.baseName
+    version = null
+    manifest {
+        attributes manifestAttributes
+    }
+    from sourceSets.main.output
+}
+
+artifacts {
+    archives file('src/web/viewer-applet-example.html')
+    archives noSshJar
+}
+
+uploadArchives {
+    repositories {
+        add(new org.apache.ivy.plugins.resolver.FileSystemResolver()) {
+            addArtifactPattern("$projectDir/dist/${project.baseName}-${project.version}/[artifact].[ext]")
+        }
+    }
+	uploadDescriptor = false
+}
+
+task dist(dependsOn: uploadArchives)
+
+def processBuildNo(currentVersion) {
+    final String VERSION = 'version'
+    final String BUILD = 'build'
+
+    def lastVersion = currentVersion
+    def lastBuild = 0
+    def buildNoFile = new File('.build_no')
+    if ( ! buildNoFile.exists()) {
+        buildNoFile.createNewFile()
+        buildNoFile << "${VERSION}=${lastVersion}\n${BUILD}=${lastBuild}"
+    }
+    def versions = [:]
+    buildNoFile.eachLine {
+        def splitted = it.split('=')
+        if (splitted.size() == 2) {
+            def (key, value) = splitted
+            switch(key.trim()) {
+                case VERSION:
+                    lastVersion = value.trim()
+                    break
+                case BUILD:
+                    try {
+                        lastBuild = value != null ? value.trim() as Integer : 0
+                    } catch (NumberFormatException) {}
+                    versions[lastVersion] = lastBuild
+                    break
+            }
+        }
+    }
+    lastVersion = versions[currentVersion]
+    if (null == lastVersion) {
+        versions[currentVersion] = 0
+    }
+    ++versions[currentVersion]
+    def outString = ''
+    versions.each { v, b ->
+        outString += "${VERSION}=${v}\n${BUILD}=${b}\n\n"
+    }
+    buildNoFile.write(outString)
+    versions[currentVersion]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
