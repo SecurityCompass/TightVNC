@@ -127,20 +127,20 @@ public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> im
                 errorMessage = "Unknown host: '" + formatHostString(connectionParams.hostName) + "'";
             } catch (IOException ioe) {
                 logger.severe("Couldn't connect to '" + connectionParams.hostName +
-                        ":" + connectionParams.getPortNumber() + "':\n" + ioe.getMessage());
+                        ":" + connectionParams.getPortNumber() + "':\n" + "IOException\n" + ioe.getMessage());
                 logger.log(Level.FINEST, "Couldn't connect to '" + connectionParams.hostName +
-                        ":" + connectionParams.getPortNumber() + "':\n" + ioe.getMessage(), ioe);
+                        ":" + connectionParams.getPortNumber() + "':\n" + "IOException\n" + ioe.getMessage(), ioe);
                 errorMessage = "Couldn't connect to '" + formatHostString(connectionParams.hostName) +
-                        ":" + connectionParams.getPortNumber() + "':\n" + ioe.getMessage();
+                        ":" + connectionParams.getPortNumber() + "':\n" + "IOException\n" + ioe.getMessage();
             } catch (CancelConnectionException cce) {
                 logger.severe("Cancelled: " + cce.getMessage());
             } catch (AccessControlException ace) {
                 logger.severe("Couldn't connect to: " +
                         connectionParams.hostName + ":" + connectionParams.getPortNumber() +
-                        ": " + ace.getMessage());
+                        ": " + "AccessControlException\n" + ace.getMessage());
                 logger.log(Level.FINEST, "Couldn't connect to: " +
                         connectionParams.hostName + ":" + connectionParams.getPortNumber() +
-                        ": " + ace.getMessage(), ace);
+                        ": " + "AccessControlException\n" + ace.getMessage(), ace);
                 errorMessage = "Access control error";
             } catch (ConnectionErrorException cee) {
                 logger.severe(cee.getMessage() + " host: " +
@@ -149,9 +149,11 @@ public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> im
                     formatHostString(connectionParams.hostName) + ":" + connectionParams.getPortNumber();
             } catch (Throwable throwable) {
                 logger.log(Level.FINEST, "Couldn't connect to '" + formatHostString(connectionParams.hostName) +
-                        ":" + connectionParams.getPortNumber() + "':\n" + throwable.getMessage(), throwable);
+                        ":" + connectionParams.getPortNumber() + "':\n" + "Caught a throwable\n" + throwable.getMessage(), throwable);
                 errorMessage = "Couldn't connect to '" + formatHostString(connectionParams.hostName) +
-                        ":" + connectionParams.getPortNumber() + "':\n" + throwable.getMessage();
+                        ":" + connectionParams.getPortNumber() + "':\n" + "Caught a throwable\n" + throwable + "\n" + throwable.getMessage();
+                throwable.printStackTrace();
+                //throw new Exception("Some other Error", throwable);
             }
             presenter.showConnectionErrorDialog(errorMessage);
             presenter.clearMessage();

@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    viewerSwingCompile group: 'com.jcraft', name: 'jsch', version: '0.1.+', ext: 'jar'
+    compile group: 'com.jcraft', name: 'jsch', version: '0.1.+', ext: 'jar'
     viewerSwingRuntime configurations.viewerSwingCompile
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
@@ -45,7 +45,10 @@ dependencies {
 def manifestAttributes = ['Main-Class': 'com.glavsoft.viewer.Viewer',
         'Implementation-Version': "${project.version} (${buildNo})",
         'Implementation-Title': 'TightVNC Viewer',
-        'Implementation-Vendor': 'GlavSoft LLC.']
+        'Implementation-Vendor': 'GlavSoft LLC.',
+        'Permissions': 'all-permissions',
+        'Codebase': '*.securitycompass.com',
+        'Application-Name': 'TightVNC Viewer']
 
 jar {
     baseName = project.baseName

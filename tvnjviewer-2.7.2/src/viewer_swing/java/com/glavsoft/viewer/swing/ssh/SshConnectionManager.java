@@ -47,9 +47,11 @@ public class SshConnectionManager implements SshKnownHostsManager {
     private String errorMessage = "";
 	private final JFrame parentWindow;
     private JSch jsch;
+    private Logger logger;
 
     public SshConnectionManager(JFrame parentWindow) {
         this.parentWindow = parentWindow;
+        logger = Logger.getLogger(getClass().getName());
 	}
 
 	public int connect(ConnectionParams connectionParams) throws CancelConnectionException {
@@ -61,11 +63,50 @@ public class SshConnectionManager implements SshKnownHostsManager {
 			session.disconnect();
 		}
         jsch = new JSch();
-        try {
-            jsch.setKnownHosts(getKnownHostsStream());
-        } catch (JSchException e) {
-            Logger.getLogger(this.getClass().getName()).severe("Cannot set JSCH known hosts: " + e.getMessage());
+
+        if (connectionParams == null){
+            System.out.println("######################## ConnectionParms was NULL #####################");
         }
+
+        String rawKey = connectionParams.sshPrivateKey;
+
+        if (rawKey == null){
+            System.out.println("######################## THE RAW KEY WAS NULL #####################");
+        }
+        if (connectionParams.sshKeyReplaceSymbol == null){
+            System.out.println("!!!!!!!!!! Replace symbol was null, using default");
+            connectionParams.sshKeyReplaceSymbol = "<>";
+        }
+        String key = rawKey.replace(connectionParams.sshKeyReplaceSymbol, "\n");
+        try {
+            if (connectionParams.sshHostKey != null && !connectionParams.sshHostKey.isEmpty()){
+                String fullHostKey = connectionParams.sshHostName + " " + connectionParams.sshHostKey;
+                byte[] publicKeyBytes = fullHostKey.getBytes();
+                ByteArrayInputStream knownHostBytes = new ByteArrayInputStream(publicKeyBytes);
+                jsch.setKnownHosts(knownHostBytes);
+                logger.info("Added known host passed in through parameters\n" + fullHostKey);
+            } else {
+                logger.info("No known host passed in, reverting to default");
+                jsch.setKnownHosts(getKnownHostsStream());
+            }
+
+            if (connectionParams.useSshKeyPair()){
+                logger.info("Added Public key to known hosts");
+                //jsch.addIdentity(connectionParams.sshPrivateKey);
+                jsch.addIdentity(
+                        "vnc_id",
+                        key.getBytes(),
+                        connectionParams.sshPublicKey.getBytes(),
+                        new byte[0]);
+            } else {
+                logger.info("No private or public key set!");
+            }
+        } catch (JSchException e) {
+            logger.severe("Cannot set JSCH known hosts: " + e.getMessage());
+        }
+        logger.info("Private Key:\n" + key);
+
+        logger.info("Public Key:\n" + connectionParams.sshPublicKey);
         int port = 0;
 		try {
 			session = jsch.getSession(

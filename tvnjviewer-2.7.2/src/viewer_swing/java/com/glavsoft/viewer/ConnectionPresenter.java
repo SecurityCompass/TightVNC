@@ -45,6 +45,9 @@ public class ConnectionPresenter extends Presenter {
     private static final String PROPERTY_SSH_USER_NAME = "SshUserName";
     private static final String PROPERTY_SSH_HOST_NAME = "SshHostName";
     private static final String PROPERTY_SSH_PORT_NUMBER = "SshPortNumber";
+    private static final String PROPERTY_SSH_PRIVATE_KEY = "SshPrivateKey";
+    private static final String PROPERTY_SSH_PUBLIC_KEY = "SshPublicKey";
+    private static final String PROPERTY_SSH_HOST_KEY = "SshHostKey";
     private static final String PROPERTY_STATUS_BAR_MESSAGE = "Message";
     private static final String PROPERTY_CONNECTION_IN_PROGRESS = "ConnectionInProgress";
     public static final String CONNECTION_PARAMS_MODEL = "ConnectionParamsModel";

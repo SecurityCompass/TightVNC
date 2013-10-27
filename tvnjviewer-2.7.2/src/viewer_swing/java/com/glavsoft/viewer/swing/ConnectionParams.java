@@ -39,16 +39,33 @@ public class ConnectionParams implements Model {
 	public String sshUserName;
 	public String sshHostName;
 	private int sshPortNumber;
+    public String sshPrivateKey;
+    public String sshPublicKey;
+    public String sshHostKey;
+    public String sshKeyReplaceSymbol;
 
 	private boolean useSsh;
 
-	public ConnectionParams(String hostName, int portNumber, boolean useSsh, String sshHostName, int sshPortNumber, String sshUserName) {
+	public ConnectionParams(String hostName,
+                            int portNumber,
+                            boolean useSsh,
+                            String sshHostName,
+                            int sshPortNumber,
+                            String sshUserName,
+                            String sshPrivateKey,
+                            String sshPublicKey,
+                            String sshHostKey,
+                            String sshKeyReplaceSymbol) {
 		this.hostName = hostName;
 		this.portNumber = portNumber;
 		this.sshUserName = sshUserName;
 		this.sshHostName = sshHostName;
 		this.sshPortNumber = sshPortNumber;
 		this.useSsh = useSsh;
+        this.sshPrivateKey = sshPrivateKey;
+        this.sshPublicKey = sshPublicKey;
+        this.sshHostKey = sshHostKey;
+        this.sshKeyReplaceSymbol = sshKeyReplaceSymbol;
 	}
 
 	public ConnectionParams(ConnectionParams cp) {
@@ -58,6 +75,10 @@ public class ConnectionParams implements Model {
 		this.sshHostName = cp.sshHostName;
 		this.sshPortNumber = cp.sshPortNumber;
 		this.useSsh = cp.useSsh;
+        this.sshPrivateKey = cp.sshPrivateKey;
+        this.sshPublicKey = cp.sshPublicKey;
+        this.sshHostKey = cp.sshHostKey;
+        this.sshKeyReplaceSymbol = cp.sshKeyReplaceSymbol;
 	}
 
 	public ConnectionParams() {
@@ -146,6 +167,45 @@ public class ConnectionParams implements Model {
         this.sshHostName = sshHostName;
     }
 
+    public String getSshPrivateKey() {
+        return sshPrivateKey;
+    }
+
+    public void setSshPrivateKey(String sshPrivateKey) {
+        this.sshPrivateKey = sshPrivateKey;
+    }
+
+    public String getSshPublicKey() {
+        return sshPublicKey;
+    }
+
+    public void setSshPublicKey(String sshPublicKey) {
+        this.sshPublicKey = sshPublicKey;
+    }
+
+    public String getSshHostKey() {
+        return sshHostKey;
+    }
+
+    public void setSshHostKey(String sshHostKey) {
+        this.sshHostKey = sshHostKey;
+    }
+
+    public String getSshKeyReplaceSymbol() {
+        return sshKeyReplaceSymbol;
+    }
+
+    public void setSshKeyReplaceSymbol(String sshKeyReplaceSymbol) {
+        this.sshKeyReplaceSymbol = sshKeyReplaceSymbol;
+    }
+
+    public boolean useSshKeyPair(){
+        return this.sshPrivateKey != null &&
+                !Strings.isTrimmedEmpty(this.sshPrivateKey) &&
+                this.sshPublicKey != null &&
+                !Strings.isTrimmedEmpty(this.sshPublicKey);
+    }
+
     public void completeEmptyFieldsFrom(ConnectionParams from) {
         if (null == from) return;
 		if (Strings.isTrimmedEmpty(hostName) && ! Strings.isTrimmedEmpty(from.hostName)) {
@@ -163,6 +223,18 @@ public class ConnectionParams implements Model {
 		if ( 0 == sshPortNumber && from.sshPortNumber != 0) {
 			sshPortNumber = from.sshPortNumber;
 		}
+        if (Strings.isTrimmedEmpty(sshPrivateKey) && ! Strings.isTrimmedEmpty(from.sshPrivateKey)) {
+            sshPrivateKey = from.sshPrivateKey;
+        }
+        if (Strings.isTrimmedEmpty(sshPublicKey) && ! Strings.isTrimmedEmpty(from.sshPublicKey)) {
+            sshPublicKey = from.sshPublicKey;
+        }
+        if (Strings.isTrimmedEmpty(sshHostKey) && ! Strings.isTrimmedEmpty(from.sshHostKey)) {
+            sshHostKey = from.sshHostKey;
+        }
+        if (Strings.isTrimmedEmpty(sshKeyReplaceSymbol) && ! Strings.isTrimmedEmpty(from.sshKeyReplaceSymbol)) {
+            sshKeyReplaceSymbol = from.sshKeyReplaceSymbol;
+        }
 		useSsh |= from.useSsh;
 	}
 
@@ -180,6 +252,10 @@ public class ConnectionParams implements Model {
                 ", sshHostName='" + sshHostName + '\'' +
                 ", sshPortNumber=" + sshPortNumber +
                 ", useSsh=" + useSsh +
+                ", sshPrivateKey=" + sshPrivateKey +
+                ", sshPublicKey=" + sshPublicKey +
+                ", sshHostKey=" + sshHostKey +
+                ", sshKeyReplaceSymbol=" + sshKeyReplaceSymbol +
                 '}';
     }
 
@@ -188,7 +264,8 @@ public class ConnectionParams implements Model {
         if (null == obj || ! (obj instanceof ConnectionParams)) return false;
         if (this == obj) return true;
         ConnectionParams o = (ConnectionParams) obj;
-        return isEqualsNullable(hostName, o.hostName) && getPortNumber() == o.getPortNumber() &&
+        return isEqualsNullable(hostName, o.hostName) && isEqualsNullable(sshPrivateKey, o.sshPrivateKey)
+                && getPortNumber() == o.getPortNumber() &&
                 useSsh == o.useSsh && isEqualsNullable(sshHostName, o.sshHostName) &&
                 getSshPortNumber() == o.getSshPortNumber() && isEqualsNullable(sshUserName, o.sshUserName);
     }
@@ -205,7 +282,12 @@ public class ConnectionParams implements Model {
                 (useSsh ? 781 : 693) +
                 (sshHostName != null? sshHostName.hashCode() : 0) * 23 +
                 (sshUserName != null? sshUserName.hashCode() : 0) * 37 +
-                sshPortNumber * 41;
+                sshPortNumber * 41 +
+                (sshPrivateKey != null? sshPrivateKey.hashCode() : 0) * 45 +
+                (sshPublicKey != null? sshPublicKey.hashCode() : 0) * 49+
+                (sshHostKey != null? sshHostKey.hashCode() : 0) * 53 +
+                (sshKeyReplaceSymbol != null? sshKeyReplaceSymbol.hashCode() : 0) * 57;
+
         return (int)hash;
     }
 
@@ -216,5 +298,9 @@ public class ConnectionParams implements Model {
         sshHostName = null;
         sshUserName = null;
         sshPortNumber = 0;
+        sshPrivateKey = null;
+        sshPublicKey = null;
+        sshHostKey = null;
+        sshKeyReplaceSymbol = null;
     }
 }

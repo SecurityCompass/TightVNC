@@ -26,6 +26,10 @@ public class ConnectionsHistory implements Model {
     public static final String NODE_SSH_HOST_NAME = "sshHostName";
     public static final String NODE_SSH_PORT_NUMBER = "sshPortNumber";
     public static final String NODE_USE_SSH = "useSsh";
+    public static final String NODE_SSH_PRIVATE_KEY = "sshPrivateKey";
+    public static final String NODE_SSH_PUBLIC_KEY = "sshPublicKey";
+    public static final String NODE_SSH_HOST_KEY = "sshHostKey";
+    public static final String NODE_SSH_REPLACE_SYMBOL = "sshKeyReplaceSymbol";
     public static final String NODE_PROTOCOL_SETTINGS = "protocolSettings";
     public static final String NODE_UI_SETTINGS = "uiSettings";
     private final Logger logger;
@@ -69,7 +73,10 @@ public class ConnectionsHistory implements Model {
                 String hostName = node.get(NODE_HOST_NAME, null);
                 if (null == hostName) continue; // skip entries without hostName field
                 ConnectionParams cp = new ConnectionParams(hostName, node.getInt(NODE_PORT_NUMBER, 0),
-                        node.getBoolean(NODE_USE_SSH, false), node.get(NODE_SSH_HOST_NAME, ""), node.getInt(NODE_SSH_PORT_NUMBER, 0), node.get(NODE_SSH_USER_NAME, "")
+                        node.getBoolean(NODE_USE_SSH, false), node.get(NODE_SSH_HOST_NAME, ""),
+                        node.getInt(NODE_SSH_PORT_NUMBER, 0), node.get(NODE_SSH_USER_NAME, ""),
+                        node.get(NODE_SSH_PRIVATE_KEY, ""), node.get(NODE_SSH_PUBLIC_KEY, ""),
+                        node.get(NODE_SSH_HOST_KEY, ""), node.get(NODE_SSH_REPLACE_SYMBOL, "<>")
                 );
                 if (uniques.contains(cp)) continue; // skip duplicates
                 uniques.add(cp);

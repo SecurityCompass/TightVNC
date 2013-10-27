@@ -1,0 +1,7 @@
+.build_no
+.idea
+.gradle
+build
+dist
+out
+*.iml

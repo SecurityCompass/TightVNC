@@ -58,6 +58,10 @@ public class ParametersHandler {
 	public static final String ARG_SSH_HOST = "sshHost";
 	public static final String ARG_SSH_USER = "sshUser";
 	public static final String ARG_SSH_PORT = "sshPort";
+    public static final String ARG_SSH_PRIVATE_KEY = "sshPrivateKey";
+    public static final String ARG_SSH_PUBLIC_KEY = "sshPublicKey";
+    public static final String ARG_SSH_HOST_KEY = "sshHostKey";
+    public static final String ARG_SSH_REPLACE_SYMBOL = "sshKeyReplaceSymbol";
     public static final String ARG_ALLOW_APPLET_INTERACTIVE_CONNECTIONS = "AllowAppletInteractiveConnections";
 
 	public static boolean isSeparateFrame;
@@ -109,10 +113,13 @@ public class ParametersHandler {
 		parser.addOption(ARG_SSH_PORT, "0",
 				"SSH port number. When empty, standard SSH port number (" + ConnectionParams.DEFAULT_SSH_PORT + ") is used.");
 		parser.addOption(ARG_SSH_USER, "", "SSH user name.");
+        parser.addOption(ARG_SSH_PRIVATE_KEY, "", "SSH private key.");
+        parser.addOption(ARG_SSH_PUBLIC_KEY, "", "SSH public key.");
+        parser.addOption(ARG_SSH_HOST_KEY, "", "SSH Host key.");
+        parser.addOption(ARG_SSH_REPLACE_SYMBOL, "<>", "Symbol to replace in SSH key. Default is '<>'");
         parser.addOption(ARG_ALLOW_APPLET_INTERACTIVE_CONNECTIONS, null, "Allow applet interactively connect to other hosts then in HostName param or hostbase. Possible values: yes/true, no/false. Default: false.");
         parser.addOption(ARG_VERBOSE, null, "Verbose console output.");
         parser.addOption(ARG_VERBOSE_MORE, null, "More verbose console output.");
-
     }
 
 	public static int completeSettingsFromCLI(final Parser parser, ConnectionParams connectionParams, ProtocolSettings rfbSettings, UiSettings uiSettings) {
@@ -187,6 +194,10 @@ public class ParametersHandler {
 		String sshHostNameParam = pr.getParamByName(ARG_SSH_HOST);
 		String sshPortNumberParam = pr.getParamByName(ARG_SSH_PORT);
 		String sshUserNameParam = pr.getParamByName(ARG_SSH_USER);
+        String sshPrivateKey = pr.getParamByName(ARG_SSH_PRIVATE_KEY);
+        String sshPublicKey = pr.getParamByName(ARG_SSH_PUBLIC_KEY);
+        String sshHostKey = pr.getParamByName(ARG_SSH_HOST_KEY);
+        String sshKeyReplaceSymbol = pr.getParamByName(ARG_SSH_REPLACE_SYMBOL);
 
 		connectionParams.hostName = hostName;
         try {
@@ -199,6 +210,10 @@ public class ParametersHandler {
 		connectionParams.setUseSsh( ! Strings.isTrimmedEmpty(sshHostNameParam));
 		connectionParams.parseSshPortNumber(sshPortNumberParam);
 		connectionParams.sshUserName = sshUserNameParam;
+        connectionParams.sshPrivateKey = sshPrivateKey;
+        connectionParams.sshPublicKey = sshPublicKey;
+        connectionParams.sshHostKey = sshHostKey;
+        connectionParams.sshKeyReplaceSymbol = sshKeyReplaceSymbol;
 
         int rfbMask = 0;
 		uiSettings.showControls = parseBooleanOrDefault(showControlsParam, true);
